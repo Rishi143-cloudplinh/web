@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatGPT Website</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="chat-window"></div>
+    <input type="text" id="user-input" placeholder="Type your message..." />
+    <button id="send-button">Send</button>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        sendButton.addEventListener('click', sendMessage);
+
+        function sendMessage() {
+            const message = userInput.value;
+
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const generatedMessage = data.generated_message;
+                displayMessage(message, 'user');
+                displayMessage(generatedMessage, 'bot');
+            });
+
+            userInput.value = '';
+        }
+
+        function displayMessage(message, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add(sender);
+            messageElement.innerHTML = message;
+
+            chatWindow.appendChild(messageElement);
+        }
+    </script>
+</body>
+</html>
